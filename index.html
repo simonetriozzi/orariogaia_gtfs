@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrarioGaia Metro - Prossimi Passaggi</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --input-bg: #0f172a;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --primary-btn: #4f46e5;
+            --primary-btn-hover: #4338ca;
+            
+            /* Line Colors */
+            --color-m1: #ef4444;
+            --color-m2: #22c55e;
+            --color-m3: #eab308;
+            --color-m4: #3b82f6;
+            --color-m5: #a855f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 2.5rem 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.6rem;
+        }
+
+        select, input[type="date"], input[type="time"], input[type="text"] {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1.2rem center;
+            background-size: 1.1rem;
+        }
+
+        select:focus, input[type="date"]:focus, input[type="time"]:focus, input[type="text"]:focus {
+            border-color: var(--primary-btn);
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .autocomplete-item {
+            padding: 0.8rem 1.2rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .autocomplete-item:hover {
+            background: var(--card-border);
+        }
+
+        .toggle-link {
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+
+        .toggle-link:hover {
+            color: var(--text-primary);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1.1rem;
+            background: var(--primary-btn);
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-btn-hover);
+        }
+
+        .loader {
+            display: none;
+            border: 2px solid transparent;
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            margin-top: 2.5rem;
+            display: none;
+        }
+
+        .results-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .results-title span {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            background: var(--input-bg);
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+        }
+
+        .departure-card {
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.2s ease;
+        }
+
+        .departure-card:hover {
+            border-color: var(--line-color, var(--primary-btn));
+        }
+
+        .departure-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background-color: var(--line-color, var(--primary-btn));
+        }
+
+        .card-left {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            padding-left: 0.5rem;
+        }
+
+        .destination {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .line-badge {
+            align-self: flex-start;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            color: #ffffff;
+            background-color: var(--line-color, var(--primary-btn));
+        }
+
+        .card-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .countdown {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--line-color, var(--primary-btn));
+        }
+
+        .exact-time {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .error-message {
+            background: #7f1d1d;
+            color: #fecaca;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+        footer a:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>OrarioGaia Metro</h1>
+            <p class="subtitle">I prossimi passaggi in tempo reale</p>
+        </header>
+
+        <main>
+            <!-- Stop Search Autocomplete -->
+            <div class="form-group" style="position: relative;">
+                <label for="stopSearch">1. Cerca Fermata</label>
+                <input type="text" id="stopSearch" placeholder="Es. Duomo, Loreto..." autocomplete="off">
+                <div id="autocompleteResults" class="autocomplete-dropdown"></div>
+            </div>
+
+            <!-- Direction Select (Macro) -->
+            <div class="form-group">
+                <label for="macroDirSelect">2. Direzione</label>
+                <select id="macroDirSelect" disabled>
+                    <option value="" disabled selected>Scegli prima una fermata...</option>
+                </select>
+            </div>
+
+            <!-- Destination Filter (Micro) -->
+            <div class="form-group" id="microDirGroup" style="display: none;">
+                <label for="microDirSelect">Filtro Destinazione (Opzionale)</label>
+                <select id="microDirSelect">
+                </select>
+            </div>
+
+            <!-- Date/Time Select -->
+            <div class="form-group">
+                <span class="toggle-link" id="toggleDateTimeBtn">⏱️ Imposta data/ora personalizzata</span>
+                <div id="dateTimeGroup" style="display: none; margin-top: 0.8rem; display: flex; gap: 0.8rem;">
+                    <input type="date" id="dateSelect" style="flex: 1;">
+                    <input type="time" id="timeSelect" style="flex: 1;">
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button id="searchBtn" class="btn-submit" disabled>
+                <span class="loader" id="btnLoader"></span>
+                <span id="btnText">Vedi Prossimi Passaggi</span>
+            </button>
+
+            <!-- Error Box -->
+            <div id="errorBox" class="error-message"></div>
+
+            <!-- Results Section -->
+            <section id="resultsSection" class="results-section">
+                <div class="results-title">
+                    Prossimi Passaggi
+                    <span id="resultsTimeBadge">--:--</span>
+                </div>
+                <div id="cardsContainer">
+                    <!-- Cards will be dynamically injected here -->
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <a href="https://dati.comune.milano.it/dataset/ds929-orari-del-trasporto-pubblico-locale-nel-comune-di-milano-in-formato-gtfs" target="_blank" rel="noopener noreferrer">Dati GTFS ufficiali Agenzia del Trasporto Pubblico Locale Milano</a>
+        </footer>
+    </div>
+
+    <script>
+        // Global stops data
+        let allStopsFlat = [];
+        let currentSelectedStop = null; // { name, route_id }
+
+        // DOM elements
+        const stopSearch = document.getElementById('stopSearch');
+        const autocompleteResults = document.getElementById('autocompleteResults');
+        const macroDirSelect = document.getElementById('macroDirSelect');
+        const microDirGroup = document.getElementById('microDirGroup');
+        const microDirSelect = document.getElementById('microDirSelect');
+        const toggleDateTimeBtn = document.getElementById('toggleDateTimeBtn');
+        const dateTimeGroup = document.getElementById('dateTimeGroup');
+        const dateSelect = document.getElementById('dateSelect');
+        const timeSelect = document.getElementById('timeSelect');
+        const searchBtn = document.getElementById('searchBtn');
+        const errorBox = document.getElementById('errorBox');
+        const resultsSection = document.getElementById('resultsSection');
+        const cardsContainer = document.getElementById('cardsContainer');
+        const resultsTimeBadge = document.getElementById('resultsTimeBadge');
+        const btnLoader = document.getElementById('btnLoader');
+        const btnText = document.getElementById('btnText');
+
+        // Initial hide for date time group
+        dateTimeGroup.style.display = 'none';
+
+        // Fetch stops on page load
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Inizializza data e ora
+            const now = new Date();
+            dateSelect.value = now.toISOString().split('T')[0];
+            timeSelect.value = now.toTimeString().slice(0, 5);
+
+            try {
+                const response = await fetch('/api/stops');
+                const stopsByLine = await response.json();
+                
+                for (const [route_id, stops] of Object.entries(stopsByLine)) {
+                    stops.forEach(s => {
+                        allStopsFlat.push({
+                            name: s.stop_name,
+                            route_id: route_id,
+                            label: `${s.stop_name.toUpperCase()} (${route_id})`
+                        });
+                    });
+                }
+                
+                // Sort alphabetically
+                allStopsFlat.sort((a, b) => a.name.localeCompare(b.name));
+            } catch (err) {
+                showError("Errore nel caricamento delle fermate. Assicurati che il server sia attivo.");
+            }
+        });
+
+        // Toggle Date Time
+        toggleDateTimeBtn.addEventListener('click', () => {
+            if (dateTimeGroup.style.display === 'none') {
+                dateTimeGroup.style.display = 'flex';
+                toggleDateTimeBtn.textContent = '⏱️ Nascondi opzioni data/ora';
+            } else {
+                dateTimeGroup.style.display = 'none';
+                toggleDateTimeBtn.textContent = '⏱️ Imposta data/ora personalizzata';
+                // Reset to current time just in case
+                const now = new Date();
+                dateSelect.value = now.toISOString().split('T')[0];
+                timeSelect.value = now.toTimeString().slice(0, 5);
+            }
+        });
+
+        // Autocomplete Logic
+        stopSearch.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase().trim();
+            autocompleteResults.innerHTML = '';
+            
+            // Clean up dependents
+            currentSelectedStop = null;
+            macroDirSelect.innerHTML = '<option value="" disabled selected>Scegli prima una fermata...</option>';
+            macroDirSelect.disabled = true;
+            microDirGroup.style.display = 'none';
+            searchBtn.disabled = true;
+            resultsSection.style.display = 'none';
+            errorBox.style.display = 'none';
+            
+            if (!val) {
+                autocompleteResults.style.display = 'none';
+                return;
+            }
+            
+            const filtered = allStopsFlat.filter(s => s.name.toLowerCase().includes(val) || s.label.toLowerCase().includes(val));
+            
+            if (filtered.length > 0) {
+                filtered.forEach(stopItem => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    
+                    const colorMap = {
+                        'M1': 'var(--color-m1)',
+                        'M2': 'var(--color-m2)',
+                        'M3': 'var(--color-m3)',
+                        'M4': 'var(--color-m4)',
+                        'M5': 'var(--color-m5)'
+                    };
+                    const color = colorMap[stopItem.route_id] || '#ffffff';
+                    
+                    div.innerHTML = `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background-color:${color};"></span> ${stopItem.label}`;
+                    
+                    div.addEventListener('click', () => {
+                        stopSearch.value = stopItem.label;
+                        autocompleteResults.style.display = 'none';
+                        currentSelectedStop = stopItem;
+                        loadDestinations(stopItem.route_id, stopItem.name);
+                    });
+                    autocompleteResults.appendChild(div);
+                });
+                autocompleteResults.style.display = 'block';
+            } else {
+                autocompleteResults.style.display = 'none';
+            }
+        });
+
+        // Hide autocomplete when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target !== stopSearch) {
+                autocompleteResults.style.display = 'none';
+            }
+        });
+
+        // Load Destinations (Macro/Micro logic)
+        async function loadDestinations(selectedLine, selectedStop) {
+            macroDirSelect.innerHTML = '<option value="" disabled selected>Caricamento direzioni...</option>';
+            macroDirSelect.disabled = true;
+            microDirGroup.style.display = 'none';
+            searchBtn.disabled = true;
+            resultsSection.style.display = 'none';
+            errorBox.style.display = 'none';
+
+            try {
+                const response = await fetch(`/api/destinations?stop_name=${encodeURIComponent(selectedStop)}&route_id=${selectedLine}`);
+                const destinations = await response.json();
+                const destNames = destinations.map(d => d.trip_headsign.toLowerCase());
+
+                macroDirSelect.innerHTML = '<option value="" disabled selected>Seleziona direzione...</option>';
+                
+                let macros = [];
+                
+                if (selectedLine === 'M1') {
+                    if (destNames.includes('bisceglie') || destNames.includes('rho fieramilano') || destNames.includes('molino dorino')) {
+                        macros.push({ label: 'Bisceglie / Rho', micro: ['bisceglie', 'rho fieramilano', 'molino dorino'].filter(d => destNames.includes(d)) });
+                    }
+                    if (destNames.includes('sesto 1 maggio fs')) {
+                        macros.push({ label: 'Sesto 1° Maggio FS', micro: ['sesto 1 maggio fs'].filter(d => destNames.includes(d)) });
+                    }
+                } else if (selectedLine === 'M2') {
+                    if (destNames.includes('abbiategrasso') || destNames.includes('assago milanofiori forum')) {
+                        macros.push({ label: 'Abbiategrasso / Assago', micro: ['abbiategrasso', 'assago milanofiori forum'].filter(d => destNames.includes(d)) });
+                    }
+                    if (destNames.includes('gessate') || destNames.includes('cologno nord') || destNames.includes('cascina gobba')) {
+                        macros.push({ label: 'Gessate / Cologno Nord', micro: ['gessate', 'cologno nord', 'cascina gobba'].filter(d => destNames.includes(d)) });
+                    }
+                } else {
+                    destinations.forEach(d => {
+                        macros.push({ label: d.trip_headsign.toUpperCase(), micro: [d.trip_headsign] });
+                    });
+                }
+                
+                window.currentMacros = macros;
+
+                macros.forEach((m, idx) => {
+                    const option = document.createElement('option');
+                    option.value = idx;
+                    option.textContent = `Direzione ${m.label}`;
+                    macroDirSelect.appendChild(option);
+                });
+                
+                macroDirSelect.disabled = false;
+            } catch (err) {
+                showError("Errore durante il recupero delle direzioni.");
+            }
+        }
+
+        // 3. Change Macro Direction
+        macroDirSelect.addEventListener('change', () => {
+            const selectedIdx = macroDirSelect.value;
+            const macro = window.currentMacros[selectedIdx];
+            
+            if (macro.micro.length > 1) {
+                microDirSelect.innerHTML = '<option value="ALL" selected>Tutte le destinazioni</option>';
+                macro.micro.forEach(m => {
+                    const option = document.createElement('option');
+                    option.value = m;
+                    option.textContent = m.toUpperCase();
+                    microDirSelect.appendChild(option);
+                });
+                microDirGroup.style.display = 'block';
+            } else {
+                microDirGroup.style.display = 'none';
+                microDirSelect.innerHTML = `<option value="${macro.micro[0]}">${macro.micro[0]}</option>`;
+            }
+            
+            searchBtn.disabled = false;
+            resultsSection.style.display = 'none';
+            errorBox.style.display = 'none';
+        });
+
+        // 4. Click Search Button
+        searchBtn.addEventListener('click', async () => {
+            if (!currentSelectedStop) return;
+            
+            const selectedLine = currentSelectedStop.route_id;
+            const selectedStop = currentSelectedStop.name;
+            const selectedIdx = macroDirSelect.value;
+            const macro = window.currentMacros[selectedIdx];
+            const microVal = microDirSelect.value;
+            
+            let headsignsToQuery = [];
+            if (microVal === 'ALL') {
+                headsignsToQuery = macro.micro;
+            } else {
+                headsignsToQuery = [microVal];
+            }
+            
+            // UI Loading state
+            btnLoader.style.display = 'inline-block';
+            btnText.textContent = 'Caricamento...';
+            searchBtn.disabled = true;
+            resultsSection.style.display = 'none';
+            errorBox.style.display = 'none';
+
+            try {
+                // Get selected date and time
+                let dateVal = dateSelect.value; // YYYY-MM-DD
+                let timeVal = timeSelect.value; // HH:MM
+                
+                let queryDateStr = dateVal.replace(/-/g, ''); // YYYYMMDD
+                let queryTimeStr = timeVal.length === 5 ? timeVal + ':00' : timeVal;
+                
+                let url = `/api/schedule?stop_name=${encodeURIComponent(selectedStop)}&route_id=${selectedLine}&date=${queryDateStr}&time=${queryTimeStr}`;
+                headsignsToQuery.forEach(h => {
+                    url += `&trip_headsign=${encodeURIComponent(h)}`;
+                });
+                
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.error) {
+                    showError(result.error);
+                } else if (!result.departures || result.departures.length === 0) {
+                    showError("Nessuna corsa programmata nelle prossime ore per questa tratta.");
+                } else {
+                    renderResults(result, queryTimeStr);
+                }
+            } catch (err) {
+                showError("Errore durante l'interrogazione degli orari.");
+            } finally {
+                btnLoader.style.display = 'none';
+                btnText.textContent = 'Vedi Prossimi Passaggi';
+                searchBtn.disabled = false;
+            }
+        });
+
+        // Helper to show errors
+        function showError(msg) {
+            errorBox.textContent = msg;
+            errorBox.style.display = 'block';
+            resultsSection.style.display = 'none';
+        }
+
+        // Render departure cards
+        function renderResults(data, queryTimeStr) {
+            cardsContainer.innerHTML = '';
+            
+            // Set queried time badge
+            resultsTimeBadge.textContent = `Rilevato alle ${queryTimeStr.slice(0, 5)}`;
+            
+            // Line colors hex map
+            const colorMap = {
+                'M1': 'var(--color-m1)',
+                'M2': 'var(--color-m2)',
+                'M3': 'var(--color-m3)',
+                'M4': 'var(--color-m4)',
+                'M5': 'var(--color-m5)'
+            };
+            const activeColor = colorMap[data.route_id] || '#6366f1';
+
+            // Get top 3 next departures
+            data.departures.forEach((dep, index) => {
+                const card = document.createElement('div');
+                card.className = 'departure-card';
+                card.style.setProperty('--line-color', activeColor);
+                card.style.animationDelay = `${index * 0.1}s`;
+
+                // Calculate countdown minutes
+                const minutesDiff = calculateMinutes(queryTimeStr, dep.departure_time);
+                let countdownText = '';
+                
+                if (minutesDiff <= 0) {
+                    countdownText = 'In arrivo';
+                } else if (minutesDiff < 60) {
+                    countdownText = `${minutesDiff} min`;
+                } else {
+                    countdownText = dep.departure_time.slice(0, 5);
+                }
+
+                card.innerHTML = `
+                    <div class="card-left">
+                        <div class="line-badge">${dep.line}</div>
+                        <div class="destination">${dep.destination}</div>
+                    </div>
+                    <div class="card-right">
+                        <div class="countdown">${countdownText}</div>
+                        <div class="exact-time">Partenza alle ${dep.departure_time.slice(0, 5)}</div>
+                    </div>
+                `;
+                cardsContainer.appendChild(card);
+            });
+
+            resultsSection.style.display = 'block';
+        }
+
+        // Helper to calculate minutes diff (handling 24h+ GTFS wrap-around)
+        function calculateMinutes(nowStr, depStr) {
+            const [nowH, nowM, nowS] = nowStr.split(':').map(Number);
+            const [depH, depM, depS] = depStr.split(':').map(Number);
+            
+            const nowSeconds = nowH * 3600 + nowM * 60 + nowS;
+            const depSeconds = depH * 3600 + depM * 60 + depS;
+            
+            let diffSeconds = depSeconds - nowSeconds;
+            
+            // If wrap-around (GTFS values up to 28h for night service)
+            if (diffSeconds < 0 && depH > 24) {
+                // Keep positive
+                return Math.max(0, Math.round(diffSeconds / 60));
+            }
+            
+            return Math.max(0, Math.round(diffSeconds / 60));
+        }
+    </script>
+</body>
+</html>

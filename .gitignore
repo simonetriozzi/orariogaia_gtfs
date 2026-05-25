@@ -1,0 +1,19 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Local Database
+*.db
+*.sqlite
+*.sqlite3
+
+# GTFS raw data (we don't want to upload these heavy files to GitHub)
+gtfs/
+*.txt
+
+# OS generated files
+.DS_Store
+
+# Virtual environment (just in case)
+venv/
+env/
