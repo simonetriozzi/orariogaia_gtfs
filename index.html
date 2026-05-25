@@ -222,73 +222,65 @@
 
         .departure-card {
             background: var(--input-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            padding: 1.2rem;
-            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--card-border);
+            padding: 1.2rem 0.5rem;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.2s ease;
+            gap: 1rem;
+            transition: background 0.2s ease;
+        }
+
+        .departure-card:last-child {
+            border-bottom: none;
         }
 
         .departure-card:hover {
-            border-color: var(--line-color, var(--primary-btn));
+            background: var(--card-border);
         }
 
-        .departure-card::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 5px;
-            background-color: var(--line-color, var(--primary-btn));
+        .card-time {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            min-width: 5rem;
+            flex-shrink: 0;
         }
 
-        .card-left {
+        .card-center {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 0.3rem;
-            padding-left: 0.5rem;
+            gap: 0.15rem;
+            min-width: 0;
         }
 
         .destination {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
-            text-transform: uppercase;
         }
 
-        .line-badge {
-            align-self: flex-start;
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 0.15rem 0.5rem;
-            border-radius: 4px;
-            color: #ffffff;
-            background-color: var(--line-color, var(--primary-btn));
+        .time-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
         }
 
         .card-right {
             text-align: right;
-            display: flex;
-            flex-direction: column;
-            gap: 0.2rem;
+            flex-shrink: 0;
         }
 
         .countdown {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             font-weight: 800;
-            color: var(--line-color, var(--primary-btn));
+            color: var(--line-color, #3b82f6);
         }
 
-        .exact-time {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
+        .countdown-unit {
+            font-size: 0.95rem;
+            font-weight: 400;
         }
 
         .error-message {
@@ -687,14 +679,16 @@
                     countdownText = dep.departure_time.slice(0, 5);
                 }
 
+                const depTimeFormatted = dep.departure_time.slice(0, 5);
+
                 card.innerHTML = `
-                    <div class="card-left">
-                        <div class="line-badge">${dep.line}</div>
+                    <div class="card-time">${depTimeFormatted}</div>
+                    <div class="card-center">
                         <div class="destination">${dep.destination}</div>
+                        <div class="time-subtitle">tra ${minutesDiff} min</div>
                     </div>
                     <div class="card-right">
-                        <div class="countdown">${countdownText}</div>
-                        <div class="exact-time">Partenza alle ${dep.departure_time.slice(0, 5)}</div>
+                        <div class="countdown">${minutesDiff} <span class="countdown-unit">min</span></div>
                     </div>
                 `;
                 cardsContainer.appendChild(card);
