@@ -9,7 +9,10 @@ __pycache__/
 
 # GTFS raw data (we don't want to upload these heavy files to GitHub)
 gtfs/
-*.txt
+gtfs/*.txt
+
+# Always include requirements.txt for Vercel
+!requirements.txt
 
 # OS generated files
 .DS_Store
