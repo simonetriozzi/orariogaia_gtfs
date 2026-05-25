@@ -155,29 +155,42 @@ def main():
         stop_idx = headers.index('stop_id')
         seq_idx = headers.index('stop_sequence')
         
-        reader = csv.reader(f)
-        for line_no, row in enumerate(reader, start=2):
-            if not row:
+        for line_no, line in enumerate(f, start=2):
+            if not line.strip():
                 continue
-            tid = row[trip_idx]
+            
+            # Extremely fast check: since trip_id is the first column and quoted
+            # e.g., "trip_id","arrival_time"...
+            if line.startswith('"'):
+                end_quote = line.find('"', 1)
+                if end_quote != -1:
+                    tid = line[1:end_quote]
+                else:
+                    continue
+            else:
+                tid = line.split(',')[0].strip('"')
+                
             if tid in metro_trip_ids:
-                sid = row[stop_idx]
-                metro_stop_ids.add(sid)
-                
-                stop_times_batch.append((
-                    tid,
-                    row[arr_idx],
-                    row[dep_idx],
-                    sid,
-                    int(row[seq_idx])
-                ))
-                
-                if len(stop_times_batch) >= batch_size:
-                    execute_values(cursor, "INSERT INTO stop_times VALUES %s", stop_times_batch)
-                    conn.commit()
-                    total_stop_times += len(stop_times_batch)
-                    stop_times_batch = []
+                # Only split the line and parse fields if we actually need this metro trip
+                row = [h.strip('"') for h in line.strip().split(',')]
+                if len(row) > seq_idx:
+                    sid = row[stop_idx]
+                    metro_stop_ids.add(sid)
                     
+                    stop_times_batch.append((
+                        tid,
+                        row[arr_idx],
+                        row[dep_idx],
+                        sid,
+                        int(row[seq_idx])
+                    ))
+                    
+                    if len(stop_times_batch) >= batch_size:
+                        execute_values(cursor, "INSERT INTO stop_times VALUES %s", stop_times_batch)
+                        conn.commit()
+                        total_stop_times += len(stop_times_batch)
+                        stop_times_batch = []
+                        
             if line_no % 1000000 == 0:
                 print(f"  Processed {line_no} lines...")
                 
