@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import psycopg2
+import psycopg
 import os
 from datetime import datetime
 from typing import List, Optional
@@ -21,7 +21,7 @@ def get_db_connection():
     db_url = os.environ.get('DATABASE_URL')
     if not db_url:
         raise Exception("DATABASE_URL environment variable is not set")
-    return psycopg2.connect(db_url)
+    return psycopg.connect(db_url)
 
 def get_closest_date(conn, target_date_str):
     cursor = conn.cursor()
