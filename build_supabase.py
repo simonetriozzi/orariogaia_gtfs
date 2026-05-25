@@ -5,7 +5,9 @@ from psycopg2.extras import execute_values
 import os
 import time
 
-SUPABASE_URL = os.environ.get('SUPABASE_URL', 'postgresql://postgres.ezittkutzpqhyocdmjib:xixnaGfykviznizhi5@aws-1-eu-central-1.pooler.supabase.com:6543/postgres')
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
+if not SUPABASE_URL:
+    raise Exception("SUPABASE_URL environment variable is not set")
 GTFS_DIR = 'gtfs'
 
 # Metro routes we want to extract

@@ -17,8 +17,10 @@ app.add_middleware(
 )
 
 def get_db_connection():
-    # Vercel uses DATABASE_URL. Fallback for local testing.
-    db_url = os.environ.get('DATABASE_URL') or os.environ.get('SUPABASE_URL', 'postgresql://postgres.ezittkutzpqhyocdmjib:xixnaGfykviznizhi5@aws-1-eu-central-1.pooler.supabase.com:6543/postgres')
+    # Vercel uses DATABASE_URL.
+    db_url = os.environ.get('DATABASE_URL')
+    if not db_url:
+        raise Exception("DATABASE_URL environment variable is not set")
     return psycopg2.connect(db_url)
 
 def get_closest_date(conn, target_date_str):
