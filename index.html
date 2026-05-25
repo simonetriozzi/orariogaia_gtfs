@@ -681,17 +681,13 @@
 
                 // Calculate countdown minutes
                 const minutesDiff = calculateMinutes(queryTimeStr, dep.departure_time);
-                let countdownText = '';
-                
-                if (minutesDiff <= 0) {
-                    countdownText = 'In arrivo';
-                } else if (minutesDiff < 60) {
-                    countdownText = `${minutesDiff} min`;
-                } else {
-                    countdownText = dep.departure_time.slice(0, 5);
                 let countdownVal = minutesDiff;
                 let countdownLabel = 'min';
-                if (minutesDiff > 60) {
+
+                if (minutesDiff <= 0) {
+                    countdownVal = '0';
+                    countdownLabel = 'min';
+                } else if (minutesDiff > 60) {
                     const hours = Math.floor(minutesDiff / 60);
                     const mins = minutesDiff % 60;
                     countdownVal = `${hours}h ${mins}`;
